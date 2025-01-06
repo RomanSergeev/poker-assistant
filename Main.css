@@ -1,0 +1,193 @@
+body {
+	margin: 0;
+	padding: 0;
+	font-size: 50px;
+	color: white;
+	background-color: black;
+	background-image: url("images/bg.jpg");
+	background-position-x: -30px;
+}
+
+body>div {
+	position: relative;
+	margin-top: 50px;
+	width: 100%; /* Take full width of the page */
+	display: flex; /* Use Flexbox for layout */
+	justify-content: space-around; /* Distribute images with space between them */
+}
+
+.shade {
+	color: black;
+	text-shadow:
+    3px  3px 0px white, 
+   -3px  3px 0px white, 
+    3px -3px 0px white, 
+   -3px -3px 0px white;
+}
+
+.shade1 {
+	color: black;
+	text-shadow:
+    1px  1px 0px white, 
+   -1px  1px 0px white, 
+    1px -1px 0px white, 
+   -1px -1px 0px white;
+}
+
+.white {
+	color: white;
+	text-shadow: 
+    3px  3px 0px black, 
+   -3px  3px 0px black, 
+    3px -3px 0px black, 
+   -3px -3px 0px black;
+}
+
+span, label {
+	color: white;
+	text-shadow: 
+    1px  1px 0px black, 
+   -1px  1px 0px black, 
+    1px -1px 0px black, 
+   -1px -1px 0px black;
+}
+
+/********** Top row - big chips **********/
+
+#imgHolder {
+	height: 300px; /* Scale all images to the same height */
+	overflow: hidden; /* Prevent horizontal scrolling */
+}
+
+/* Image setup */
+#imgHolder div {
+	position: relative;
+	display: inline-block;
+	height: 100%;
+	object-fit: cover; /* Maintain aspect ratio while filling the height */
+}
+
+#imgHolder img {
+	height: 300px;
+}
+
+#imgHolder input {
+	position: absolute;
+    width: 200px;
+    height: 90px;
+    top: 101px;
+    left: 47px;
+    background: transparent;
+	font-size: 90px;
+	font-weight: bold;
+	border: none;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+/* For Firefox */
+input[type=number] {
+	-moz-appearance: textfield;
+}
+
+/* General styling (optional) */
+input[type=number] {
+	text-align: center;
+	appearance: none; /* Ensures compatibility with other browsers */
+}
+
+/********** First row - timer **********/
+
+div#timerHolder input {
+	height: 50px;
+	font-size: 50px;
+}
+
+button {
+	width: 200px;
+	height: 54px;
+	margin-left: 50px;
+	vertical-align: text-bottom;
+	font-size: 40px;
+}
+
+div#timerMain button {
+	margin-bottom: 18px;
+}
+
+div#timer {
+	display: inline-block;
+    width: 400px;
+    height: 100px;
+    font-size: 100px;
+    background-color: white;
+    color: black;
+    text-align: center;
+    line-height: 100px;
+    font-weight: bold;
+    letter-spacing: .1em;
+	user-select: none;
+}
+
+#blindInputs {
+	text-align: right;
+	margin-top: 50px;
+}
+
+#blinds {
+	font-size: 125px;
+	margin-left: 50px;
+}
+
+/********** Middle row - stack and chips count **********/
+
+div#calcHolder1 {
+	line-height: 100px;
+}
+
+span#stackStart,
+span#stackRebuy {
+	font-weight: bold;
+}
+
+span#startChips,
+span#plus {
+	vertical-align: top;
+}
+
+div#startChipsHolder {
+	position: relative;
+	display: inline-block;
+}
+
+div#startChipsHolder>div {
+	position: absolute;
+	width: 100px;
+	height: 100%;
+	background-size: contain;
+	background-repeat: no-repeat;
+}
+
+div#startChipsHolder span {
+	position: absolute;
+	top: 33px;
+	left: 20px;
+	font-size: 30px;
+	line-height: 30px;
+	user-select: none;
+}
+
+div#startChipsHolder>div:nth-last-child(1) span {
+	left: 40%;
+}
+
+/********** Bottom row - players and rebuys **********/
+
+div#calcHolder2 input {
+	height: 50px;
+	font-size: 50px;
+}

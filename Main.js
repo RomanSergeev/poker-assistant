@@ -4,7 +4,7 @@ const MINUTE = 60;
 const CHIPS_HEIGHT_1 = 300;
 const CHIPS_HEIGHT_2 = 100;
 const SAVE_TIMER_EVERY_SECONDS = 5;
-const srcs = ["chip white.png", "chip green.png", "chip red.png", "chip blue.png", "chip black.png"];
+const srcs = ["Chip white.png", "Chip green.png", "Chip red.png", "Chip blue.png", "Chip black.png"];
 var maxChips = [50, 50, 100, 50, 50];
 var playing = false; // cookie
 var paused = false; // cookie
@@ -93,14 +93,14 @@ window.onload = function() {
 	
 	var imgs = document.querySelectorAll("img");
 	for (var i = 0; i < TYPES; ++i)
-		imgs[i].src = "images/" + srcs[i];
+		imgs[i].src = "./Images/" + srcs[i];
 	
 	var ch = $("startChipsHolder");
 	ch.style.width  = (CHIPS_HEIGHT_2 / 2 * (TYPES + 1)) + "px";
 	ch.style.height =  CHIPS_HEIGHT_2 + "px";
 	for (var i = 0; i < TYPES; ++i) {
 		ch.children[i].style.width = CHIPS_HEIGHT_2 + "px";
-		ch.children[i].style.backgroundImage = 'url("images/' + srcs[i] + '")';
+		ch.children[i].style.backgroundImage = 'url("./Images/' + srcs[i] + '")';
 		ch.children[i].style.left = i * (CHIPS_HEIGHT_2 / 2) + "px";
 	}
 	

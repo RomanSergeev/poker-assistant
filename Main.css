@@ -81,6 +81,8 @@ body:not(.evenChips) span#plus {
 	display: inline-block;
 }
 
+/********** Main elements layout **********/
+
 body>div {
 	position: relative;
 	margin-top: 1rem;
@@ -118,7 +120,7 @@ body>div {
    -3px -3px 0px black;
 }
 
-span, label {
+span, label, .white1 {
 	color: white;
 	text-shadow: 
     1px  1px 0px black, 
@@ -227,6 +229,7 @@ div#timer {
 #blinds {
 	font-size: 4rem;
 	margin-left: 0.75rem;
+	user-select: none;
 }
 
 /********** Middle row - stack and chips count **********/
@@ -282,4 +285,16 @@ div#calcHolder2 input {
 
 div#resetHolder {
 	text-align: center;
+}
+
+div#soundToggle {
+	border: 1px solid white;
+    border-radius: 0.3rem;
+    padding: 0 0.3rem;
+    cursor: pointer;
+    user-select: none;
+    min-width: 7rem;
+    display: inline-block;
+    text-align: center;
+	background-color: #fff3;
 }

@@ -3,13 +3,30 @@ const MINUTE = 60;
 const CHIPS_HEIGHT_1 = 15;
 const CHIPS_HEIGHT_2 = 2;
 const SAVE_TIMER_EVERY_SECONDS = 5;
-const IMGPATH = "./Images/";
-const srcs = ["Chip white.png", "Chip green.png", "Chip red.png", "Chip blue.png", "Chip black.png"];
-var maxChips = [50, 50, 100, 50, 50];
-var playing = false; // cookie
-var paused = false; // cookie
-var timeLeft = 0; // cookie
-var blindsSmall, blindsBig, blindIndexSmall, blindIndexBig; // cookies
+const IMG_PATH = "./Images/";
+const IMG_NAMES = ["Chip white.png", "Chip green.png", "Chip red.png", "Chip blue.png", "Chip black.png"];
+const maxChips = [50, 50, 100, 50, 50];
+const BCN = { // body class names
+	IN_GAME      : "playing"   , // the game has started: timer and/or blinds are on display
+	LAST_BLINDS  : "done"      , // counter reached the last blinds pair, and is no more updated
+	REBUYS       : "withRebuys", // whether playing with rebuys
+	PERFECT_SPLIT: "evenChips"   // whether default chip assignment is enough
+};
+const CN = { // cookie names (not the full list)
+	PAUSED   : "paused"      , // whether game is paused (boolean)
+	ALERTS   : "soundEnabled", // whether warning sounds for blind raising must be played (boolean)
+	IN_GAME  : "playing"     , // whether the game is in process (boolean)
+	INDEX_SB : "indexSB"     , // index of current small blind in an array of all SBs
+	INDEX_BB : "indexBB"     , // index of current big blind in an array of all BBs
+	TIME_LEFT: "timer"       , // time left (seconds) in the current blinds round before blinds raise
+};
+// cookie-bound variables
+var playing = false;
+var paused = false;
+var timeLeft = 0;
+var sound = true;
+var blindsSmall, blindsBig, blindIndexSmall, blindIndexBig;
+
 var inputsAll;
 
 function $(id) { return document.getElementById(id); }
@@ -19,22 +36,23 @@ function getBlinds(id) { return $(id).value.split(" ").map(x => +x).filter(x => 
 function updateBlindsText(idxSB, idxBB) { set("blinds", "Блайнды: " + blindsSmall[idxSB] + " / " + blindsBig[idxBB]); }
 function hasCookie(name) { return Cookies.get(name) !== undefined; }
 function tcn(name, turnOn) { if (turnOn) document.body.classList.add(name); else document.body.classList.remove(name); } // toggle class name
-function setPaused(p) { Cookies.set("paused", paused = p); set("pause", p ? "Пуск" : "Пауза"); }
+function setPaused(p) { Cookies.set(CN.PAUSED, paused = p); set("pause", p ? "Пуск" : "Пауза"); }
+function enableSound(doEnable) { Cookies.set(CN.ALERTS, sound = doEnable); set("soundToggle", doEnable ? "Убрать звук" : "Включить звук"); }
 function applyToAllInputs(f) {
 	for (var input in inputsAll)
 		f(inputsAll[input]);
 }
 
 function setPlaying(play, indexSB = 0, indexBB = 0, pause = false, time = -1) {
-	Cookies.set("playing", playing = play);
-	tcn("playing", play);
+	Cookies.set(CN.IN_GAME, playing = play);
+	tcn(BCN.IN_GAME, play);
 	if (play) {
 		blindsSmall = getBlinds("inputSB");
 		blindsBig   = getBlinds("inputBB");
 		if (blindsSmall.length == 0) blindsSmall = [0];
 		if (blindsBig  .length == 0) blindsBig   = [0];
-		Cookies.set("indexSB", blindIndexSmall = indexSB);
-		Cookies.set("indexBB", blindIndexBig   = indexBB);
+		Cookies.set(CN.INDEX_SB, blindIndexSmall = indexSB);
+		Cookies.set(CN.INDEX_BB, blindIndexBig   = indexBB);
 		setPaused(pause);
 		if (time > 0) // for time saved/loaded via cookies
 			resetTimer(time);
@@ -43,16 +61,16 @@ function setPlaying(play, indexSB = 0, indexBB = 0, pause = false, time = -1) {
 		$("chip1").setAttribute("disabled", "");
 		applyToAllInputs(input => input.disabled = " ");
 	} else {
-		Cookies.remove("timer");
-		tcn("done", false); // just for a clean classname
+		Cookies.remove(CN.TIME_LEFT);
+		tcn(BCN.LAST_BLINDS, false); // just for a clean classname
 		applyToAllInputs(input => input.removeAttribute("disabled"));
 	}
 }
 
 function resetTimer(time) {
 	if (arguments.length == 0) time = MINUTE * num(5);
-	Cookies.set("timer", timeLeft = time);
-	tcn("done",
+	Cookies.set(CN.TIME_LEFT, timeLeft = time);
+	tcn(BCN.LAST_BLINDS,
 		blindIndexSmall == blindsSmall.length - 1 &&
 		blindIndexBig   == blindsBig  .length - 1);
 	updateBlindsText(blindIndexSmall, blindIndexBig);
@@ -70,13 +88,17 @@ function runTimer() {
 		return;
 	}
 	updateTimerText();
+	if (playing && !document.body.classList.contains(BCN.LAST_BLINDS) && sound) {
+		if (timeLeft == MINUTE || (timeLeft < 4 && timeLeft > 0)) $("beepShort").play(); // warn beep at 1 minute, and 3 times before raise
+		if (timeLeft == 0) $("beepLong").play();
+	}
 	if (timeLeft) {
 		--timeLeft;
 		if (timeLeft % SAVE_TIMER_EVERY_SECONDS == 0)
-			Cookies.set("timer", timeLeft);
+			Cookies.set(CN.TIME_LEFT, timeLeft);
 	} else {
-		if (blindIndexSmall < blindsSmall.length - 1) Cookies.set("indexSB", ++blindIndexSmall);
-		if (blindIndexBig   < blindsBig  .length - 1) Cookies.set("indexBB", ++blindIndexBig  );
+		if (blindIndexSmall < blindsSmall.length - 1) Cookies.set(CN.INDEX_SB, ++blindIndexSmall);
+		if (blindIndexBig   < blindsBig  .length - 1) Cookies.set(CN.INDEX_BB, ++blindIndexBig  );
 		resetTimer();
 	}
 	setTimeout(runTimer, 1000);
@@ -89,19 +111,18 @@ function bindCookieToInput(inputId, cookieName) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-	var body = document.body;
 	inputsAll = Array.from(document.querySelectorAll("input"));
 	applyToAllInputs(input => input.addEventListener("change", recalculate));
 	recalculate();
 	
 	var imgs = document.querySelectorAll("img");
 	for (var i = 0; i < TYPES; ++i)
-		imgs[i].src = IMGPATH + srcs[i];
+		imgs[i].src = IMG_PATH + IMG_NAMES[i];
 	
 	// can be done with styles only
 	var ch = $("startChipsHolder");
 	for (var i = 0; i < TYPES; ++i) {
-		ch.children[i].style.backgroundImage = 'url("' + IMGPATH + srcs[i] + '")';
+		ch.children[i].style.backgroundImage = 'url("' + IMG_PATH + IMG_NAMES[i] + '")';
 		ch.children[i].style.left = i * (CHIPS_HEIGHT_2 / 2) + "rem";
 	}
 	
@@ -109,6 +130,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	$("stop" ).addEventListener("click", () => setPlaying(false) );
 	$("stop2").addEventListener("click", () => setPlaying(false) );
 	$("pause").addEventListener("click", () => setPaused(!paused));
+	$("soundToggle").addEventListener("click", () => enableSound(!sound));
 	bindCookieToInput("chip1"    , "chipValueWhite" );
 	bindCookieToInput("chip2"    , "chipValueGreen" );
 	bindCookieToInput("chip3"    , "chipValueRed"   );
@@ -120,13 +142,16 @@ document.addEventListener("DOMContentLoaded", function() {
 	bindCookieToInput("ppl"      , "numPlayers"     );
 	bindCookieToInput("rebuys"   , "numRebuys"      );
 	bindCookieToInput("rebuyPC"  , "rebuyPercentage");
-	if (hasCookie("playing"))
+	if (hasCookie(CN.ALERTS))
+		enableSound(Cookies.get(CN.ALERTS) == "true");
+	else enableSound(sound);
+	if (hasCookie(CN.IN_GAME))
 		setPlaying(
-			Cookies.get("playing") == "true",
-			Cookies.get("indexSB"),
-			Cookies.get("indexBB"),
-			Cookies.get("paused") == "true",
-			Cookies.get("timer")
+			Cookies.get(CN.IN_GAME  ) == "true",
+			Cookies.get(CN.INDEX_SB ),
+			Cookies.get(CN.INDEX_BB ),
+			Cookies.get(CN.PAUSED   ) == "true",
+			Cookies.get(CN.TIME_LEFT)
 		);
 	else
 		setPlaying(false);
@@ -148,7 +173,7 @@ function recalculate() {
 	set("bank", totalBank);
 	set("stackStart", stackStart);
 	set("stackRebuy", stackRebuy);
-	tcn("withRebuys", stackRebuy);
+	tcn(BCN.REBUYS, stackRebuy);
 	
 	var ecc = Math.floor(stackStart / sumNominals); // equalChipCount
 	var startChips = [ecc, ecc, 2*ecc, ecc, ecc];
@@ -159,10 +184,10 @@ function recalculate() {
 	set("startChips4", startChips[3]);
 	set("startChips5", startChips[4]);
 	set("plus", "+ " + remainder);
-	tcn("evenChips", !remainder);
+	tcn(BCN.PERFECT_SPLIT, !remainder);
 }
 
-// debug purposes: log existing cookies as an object
+// debug purposes: log existing cookies as an object. By ChatGPT
 function logCookies() {
 	var cookies = document.cookie.split('; ').reduce((acc, cookie) => {
 		var [key, value] = cookie.split('=');

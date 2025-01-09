@@ -62,6 +62,7 @@ body.done div#timerSub {
 
 body:not(.done) div#timerSub {
 	display: block;
+	margin-bottom: 2rem;
 }
 
 body.withRebuys div#rebuy {
@@ -189,24 +190,32 @@ button {
 	font-size: 0.8rem;
 }
 
+div#timerSub button {
+	width: 8rem;
+	height: 2.2rem;
+	margin-left: 1rem;
+	vertical-align: text-bottom;
+	font-size: 1.6rem;
+}
+
 div#timerMain {
 	text-align: center;
 }
 
 div#timerMain button {
-	margin-bottom: 0.3rem;
+	margin-bottom: 0.6rem;
 }
 
 div#timer {
 	display: inline-block;
-    width: 8rem;
-    height: 2rem;
-    font-size: 2rem;
+    width: 16rem;
+    height: 4rem;
+    font-size: 4rem;
+    line-height: 4rem;
     background-color: white;
     color: black;
-    line-height: 2rem;
     font-weight: bold;
-    letter-spacing: .1em;
+    letter-spacing: .2em;
 	user-select: none;
 }
 
@@ -216,7 +225,7 @@ div#timer {
 }
 
 #blinds {
-	font-size: 2rem;
+	font-size: 4rem;
 	margin-left: 0.75rem;
 }
 

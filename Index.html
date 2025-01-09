@@ -2,20 +2,21 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Poker setup</title>
 <script src="js.cookie.js"></script>
 <script src="Main.js" charset="UTF-8"></script>
-<link rel="icon" href="Images/chip red.png"/>
+<link rel="icon" href="Images/Chip red.png"/>
 <link rel="stylesheet" type="text/css" href="Main.css"/>
 </head>
 <body>
 
 <div id="imgHolder">
-	<div><img/><input type="number" min="0" step="1" value="1"   class="shade"/></div>
-	<div><img/><input type="number" min="0" step="1" value="5"   class="shade"/></div>
-	<div><img/><input type="number" min="0" step="1" value="25"  class="shade"/></div>
-	<div><img/><input type="number" min="0" step="1" value="100" class="shade"/></div>
-	<div><img/><input type="number" min="0" step="1" value="500" class="white"/></div>
+	<div><img/><input id="chip1" type="number" min="0" step="1" value="1"   class="shade"/></div>
+	<div><img/><input id="chip2" type="number" min="0" step="1" value="5"   class="shade"/></div>
+	<div><img/><input id="chip3" type="number" min="0" step="1" value="25"  class="shade"/></div>
+	<div><img/><input id="chip4" type="number" min="0" step="1" value="100" class="shade"/></div>
+	<div><img/><input id="chip5" type="number" min="0" step="1" value="500" class="white"/></div>
 </div>
 <div id="timerHolder">
 	<div id="timerSetup">
@@ -57,7 +58,7 @@
 	<div><label for="rebuys">Ребаев: </label><input type="number" id="rebuys" min="0" max="3" value="0"></div>
 	<div><label for="rebuyPC">% ребая: </label><input type="number" id="rebuyPC" min="0" max="50" value="40"></div>
 </div>
-<div id="resetHolder" style="display: none;">
+<div id="resetHolder">
 	<button id="stop2">Стоп</button>
 </div>
 

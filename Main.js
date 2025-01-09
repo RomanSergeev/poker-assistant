@@ -1,9 +1,10 @@
 var inputsAll;
 const TYPES = 5;
 const MINUTE = 60;
-const CHIPS_HEIGHT_1 = 300;
-const CHIPS_HEIGHT_2 = 100;
+const CHIPS_HEIGHT_1 = 15;
+const CHIPS_HEIGHT_2 = 2;
 const SAVE_TIMER_EVERY_SECONDS = 5;
+const IMGPATH = "./Images/";
 const srcs = ["Chip white.png", "Chip green.png", "Chip red.png", "Chip blue.png", "Chip black.png"];
 var maxChips = [50, 50, 100, 50, 50];
 var playing = false; // cookie
@@ -13,15 +14,16 @@ var blindsSmall, blindsBig, blindIndexSmall, blindIndexBig; // cookies
 
 function $(id) { return document.getElementById(id); }
 function num(index) { return +inputsAll[index].value; }
-function set(id, text) { $(id).innerText = text; }
+function set(id, text) { $(id).textContent = text; }
 function getBlinds(id) { return $(id).value.split(" ").map(x => +x).filter(x => x); }
-function updateBlindsText(idxSB, idxBB) { $("blinds").textContent = "Блайнды: " + blindsSmall[idxSB] + " / " + blindsBig[idxBB]; }
+function updateBlindsText(idxSB, idxBB) { set("blinds", "Блайнды: " + blindsSmall[idxSB] + " / " + blindsBig[idxBB]); }
 function hasCookie(name) { return Cookies.get(name) !== undefined; }
+function tcn(name, turnOn) { if (turnOn) document.body.classList.add(name); else document.body.classList.remove(name); } // toggle class name
+function setPaused(p) { Cookies.set("paused", paused = p); set("pause", p ? "Пуск" : "Пауза"); }
 
 function setPlaying(play, indexSB = 0, indexBB = 0, pause = false, time = -1) {
 	Cookies.set("playing", playing = play);
-	$("timerSetup").style.display = (play ? "none" : "block");
-	$("timerMain" ).style.display = (play ? "block" : "none");
+	tcn("playing", play);
 	if (play) {
 		blindsSmall = getBlinds("inputSB");
 		blindsBig   = getBlinds("inputBB");
@@ -29,8 +31,7 @@ function setPlaying(play, indexSB = 0, indexBB = 0, pause = false, time = -1) {
 		if (blindsBig  .length == 0) blindsBig   = [0];
 		Cookies.set("indexSB", blindIndexSmall = indexSB);
 		Cookies.set("indexBB", blindIndexBig   = indexBB);
-		Cookies.set("paused", paused = pause);
-		$("pause").textContent = (paused ? "Пуск" : "Пауза");
+		setPaused(pause);
 		if (time > 0) // for time saved/loaded via cookies
 			resetTimer(time);
 		else
@@ -43,21 +44,16 @@ function setPlaying(play, indexSB = 0, indexBB = 0, pause = false, time = -1) {
 function resetTimer(time) {
 	if (arguments.length == 0) time = MINUTE * num(5);
 	Cookies.set("timer", timeLeft = time);
-	if (blindIndexSmall == blindsSmall.length - 1 &&
-		blindIndexBig   == blindsBig  .length - 1) {
-		$("timerSub").style.display = "none"; // reached the end
-		$("resetHolder").style.display = "flex";
-	} else {
-		$("timerSub").style.display = "inline-block";
-		$("resetHolder").style.display = "none";
-	}
+	tcn("done",
+		blindIndexSmall == blindsSmall.length - 1 &&
+		blindIndexBig   == blindsBig  .length - 1);
 	updateBlindsText(blindIndexSmall, blindIndexBig);
 }
 
 function updateTimerText() {
 	var mins = Math.floor(timeLeft / 60), secs = timeLeft % 60;
 	var str = mins + ":" + (secs < 10 ? "0" : "") + secs;
-	$("timer").textContent = str;
+	set("timer", str);
 }
 
 function runTimer() {
@@ -80,6 +76,7 @@ function runTimer() {
 
 function bindCookieToInput(inputId, cookieName) {
 	if (hasCookie(cookieName)) $(inputId).value = Cookies.get(cookieName);
+	else Cookies.set(cookieName, $(inputId).value);
 	$(inputId).addEventListener("change", () => Cookies.set(cookieName, $(inputId).value) );
 }
 
@@ -93,24 +90,26 @@ window.onload = function() {
 	
 	var imgs = document.querySelectorAll("img");
 	for (var i = 0; i < TYPES; ++i)
-		imgs[i].src = "./Images/" + srcs[i];
+		imgs[i].src = IMGPATH + srcs[i];
 	
 	var ch = $("startChipsHolder");
-	ch.style.width  = (CHIPS_HEIGHT_2 / 2 * (TYPES + 1)) + "px";
-	ch.style.height =  CHIPS_HEIGHT_2 + "px";
+	ch.style.width  = (CHIPS_HEIGHT_2 / 2 * (TYPES + 1)) + "rem";
+	ch.style.height =  CHIPS_HEIGHT_2 + "rem";
 	for (var i = 0; i < TYPES; ++i) {
-		ch.children[i].style.width = CHIPS_HEIGHT_2 + "px";
-		ch.children[i].style.backgroundImage = 'url("./Images/' + srcs[i] + '")';
-		ch.children[i].style.left = i * (CHIPS_HEIGHT_2 / 2) + "px";
+		ch.children[i].style.width = CHIPS_HEIGHT_2 + "rem";
+		ch.children[i].style.backgroundImage = 'url("' + IMGPATH + srcs[i] + '")';
+		ch.children[i].style.left = i * (CHIPS_HEIGHT_2 / 2) + "rem";
 	}
 	
 	$("start").addEventListener("click", () => setPlaying(true ) );
 	$("stop" ).addEventListener("click", () => setPlaying(false) );
 	$("stop2").addEventListener("click", () => setPlaying(false) );
-	$("pause").addEventListener("click", () => {
-		Cookies.set("paused", paused = !paused);
-		$("pause").textContent = (paused ? "Пуск" : "Пауза");
-	});
+	$("pause").addEventListener("click", () => setPaused(!paused));
+	bindCookieToInput("chip1", "chipValueWhite");
+	bindCookieToInput("chip2", "chipValueGreen");
+	bindCookieToInput("chip3", "chipValueRed"  );
+	bindCookieToInput("chip4", "chipValueBlue" );
+	bindCookieToInput("chip5", "chipValueBlack");
 	bindCookieToInput("inputSB", "SBs");
 	bindCookieToInput("inputBB", "BBs");
 	bindCookieToInput("timerMins", "roundMinutes");
@@ -144,30 +143,18 @@ function recalculate() {
 	set("bank", totalBank);
 	set("stackStart", stackStart);
 	set("stackRebuy", stackRebuy);
-	
-	$("rebuy").style.display = (stackRebuy == 0) ? "none" : "inline";
+	tcn("withRebuys", stackRebuy);
 	
 	var ecc = Math.floor(stackStart / sumNominals); // equalChipCount
 	var startChips = [ecc, ecc, 2*ecc, ecc, ecc];
 	var remainder = stackStart % sumNominals;
-	/*var index = 4;
-	while (remainder > 0 && index >= 0) {
-		var times = Math.floor(remainder / nom[index]);
-		startChips[index] += times;
-		remainder -= times * nom[index];
-		--index;
-	}*/
 	set("startChips1", startChips[0]);
 	set("startChips2", startChips[1]);
 	set("startChips3", startChips[2]);
 	set("startChips4", startChips[3]);
 	set("startChips5", startChips[4]);
-	if (remainder > 0) {
-		$("plus").style.display = "inline-block";
-		$("plus").textContent = "+ " + remainder;
-	} else {
-		$("plus").style.display = "none";
-	}
+	set("plus", "+ " + remainder);
+	tcn("evenChips", !remainder);
 }
 
 function logCookies() {

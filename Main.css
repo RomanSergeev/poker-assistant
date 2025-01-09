@@ -61,7 +61,7 @@ body.done div#timerSub {
 }
 
 body:not(.done) div#timerSub {
-	display: inline-block;
+	display: block;
 }
 
 body.withRebuys div#rebuy {
@@ -189,6 +189,10 @@ button {
 	font-size: 0.8rem;
 }
 
+div#timerMain {
+	text-align: center;
+}
+
 div#timerMain button {
 	margin-bottom: 0.3rem;
 }
@@ -200,7 +204,6 @@ div#timer {
     font-size: 2rem;
     background-color: white;
     color: black;
-    text-align: center;
     line-height: 2rem;
     font-weight: bold;
     letter-spacing: .1em;
@@ -236,10 +239,13 @@ span#plus {
 div#startChipsHolder {
 	position: relative;
 	display: inline-block;
+	width: 6rem;
+	height: 2rem;
 }
 
 div#startChipsHolder>div {
 	position: absolute;
+	width: 2rem;
 	height: 100%;
 	background-size: contain;
 	background-repeat: no-repeat;

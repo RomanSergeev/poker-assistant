@@ -1,4 +1,3 @@
-var inputsAll;
 const TYPES = 5;
 const MINUTE = 60;
 const CHIPS_HEIGHT_1 = 15;
@@ -11,6 +10,7 @@ var playing = false; // cookie
 var paused = false; // cookie
 var timeLeft = 0; // cookie
 var blindsSmall, blindsBig, blindIndexSmall, blindIndexBig; // cookies
+var inputsAll;
 
 function $(id) { return document.getElementById(id); }
 function num(index) { return +inputsAll[index].value; }
@@ -20,6 +20,10 @@ function updateBlindsText(idxSB, idxBB) { set("blinds", "Блайнды: " + bli
 function hasCookie(name) { return Cookies.get(name) !== undefined; }
 function tcn(name, turnOn) { if (turnOn) document.body.classList.add(name); else document.body.classList.remove(name); } // toggle class name
 function setPaused(p) { Cookies.set("paused", paused = p); set("pause", p ? "Пуск" : "Пауза"); }
+function applyToAllInputs(f) {
+	for (var input in inputsAll)
+		f(inputsAll[input]);
+}
 
 function setPlaying(play, indexSB = 0, indexBB = 0, pause = false, time = -1) {
 	Cookies.set("playing", playing = play);
@@ -36,8 +40,12 @@ function setPlaying(play, indexSB = 0, indexBB = 0, pause = false, time = -1) {
 			resetTimer(time);
 		else
 			resetTimer();
+		$("chip1").setAttribute("disabled", "");
+		applyToAllInputs(input => input.disabled = " ");
 	} else {
 		Cookies.remove("timer");
+		tcn("done", false); // just for a clean classname
+		applyToAllInputs(input => input.removeAttribute("disabled"));
 	}
 }
 
@@ -57,11 +65,11 @@ function updateTimerText() {
 }
 
 function runTimer() {
-	updateTimerText();
 	if (!playing || paused) {
 		setTimeout(runTimer, 1000);
 		return;
 	}
+	updateTimerText();
 	if (timeLeft) {
 		--timeLeft;
 		if (timeLeft % SAVE_TIMER_EVERY_SECONDS == 0)
@@ -80,23 +88,19 @@ function bindCookieToInput(inputId, cookieName) {
 	$(inputId).addEventListener("change", () => Cookies.set(cookieName, $(inputId).value) );
 }
 
-window.onload = function() {
+document.addEventListener("DOMContentLoaded", function() {
 	var body = document.body;
 	inputsAll = Array.from(document.querySelectorAll("input"));
-	for (var input in inputsAll) {
-		inputsAll[input].addEventListener("change", recalculate);
-	}
+	applyToAllInputs(input => input.addEventListener("change", recalculate));
 	recalculate();
 	
 	var imgs = document.querySelectorAll("img");
 	for (var i = 0; i < TYPES; ++i)
 		imgs[i].src = IMGPATH + srcs[i];
 	
+	// can be done with styles only
 	var ch = $("startChipsHolder");
-	ch.style.width  = (CHIPS_HEIGHT_2 / 2 * (TYPES + 1)) + "rem";
-	ch.style.height =  CHIPS_HEIGHT_2 + "rem";
 	for (var i = 0; i < TYPES; ++i) {
-		ch.children[i].style.width = CHIPS_HEIGHT_2 + "rem";
 		ch.children[i].style.backgroundImage = 'url("' + IMGPATH + srcs[i] + '")';
 		ch.children[i].style.left = i * (CHIPS_HEIGHT_2 / 2) + "rem";
 	}
@@ -105,17 +109,17 @@ window.onload = function() {
 	$("stop" ).addEventListener("click", () => setPlaying(false) );
 	$("stop2").addEventListener("click", () => setPlaying(false) );
 	$("pause").addEventListener("click", () => setPaused(!paused));
-	bindCookieToInput("chip1", "chipValueWhite");
-	bindCookieToInput("chip2", "chipValueGreen");
-	bindCookieToInput("chip3", "chipValueRed"  );
-	bindCookieToInput("chip4", "chipValueBlue" );
-	bindCookieToInput("chip5", "chipValueBlack");
-	bindCookieToInput("inputSB", "SBs");
-	bindCookieToInput("inputBB", "BBs");
-	bindCookieToInput("timerMins", "roundMinutes");
-	bindCookieToInput("ppl", "numPlayers");
-	bindCookieToInput("rebuys", "numRebuys");
-	bindCookieToInput("rebuyPC", "rebuyPercentage");
+	bindCookieToInput("chip1"    , "chipValueWhite" );
+	bindCookieToInput("chip2"    , "chipValueGreen" );
+	bindCookieToInput("chip3"    , "chipValueRed"   );
+	bindCookieToInput("chip4"    , "chipValueBlue"  );
+	bindCookieToInput("chip5"    , "chipValueBlack" );
+	bindCookieToInput("inputSB"  , "SBs"            );
+	bindCookieToInput("inputBB"  , "BBs"            );
+	bindCookieToInput("timerMins", "roundMinutes"   );
+	bindCookieToInput("ppl"      , "numPlayers"     );
+	bindCookieToInput("rebuys"   , "numRebuys"      );
+	bindCookieToInput("rebuyPC"  , "rebuyPercentage");
 	if (hasCookie("playing"))
 		setPlaying(
 			Cookies.get("playing") == "true",
@@ -127,8 +131,9 @@ window.onload = function() {
 	else
 		setPlaying(false);
 	runTimer();
-}
+});
 
+// update span texts based on input values
 function recalculate() {
 	var nom = [num(0), num(1), num(2), num(3), num(4)]; // nominals
 	var sumNominals = nom[0] + nom[1] + 2*nom[2] + nom[3] + nom[4];
@@ -157,6 +162,7 @@ function recalculate() {
 	tcn("evenChips", !remainder);
 }
 
+// debug purposes: log existing cookies as an object
 function logCookies() {
 	var cookies = document.cookie.split('; ').reduce((acc, cookie) => {
 		var [key, value] = cookie.split('=');
@@ -165,3 +171,27 @@ function logCookies() {
 	}, {});
 	console.log(cookies);
 }
+
+// wakeLock: keep the screen on (by ChatGPT)
+let wakeLock = null;
+
+async function enableWakeLock() {
+    try {
+        wakeLock = await navigator.wakeLock.request("screen");
+        console.log("Screen wake lock enabled.");
+    } catch (err) {
+        console.error("Failed to enable wake lock:", err);
+    }
+}
+
+function disableWakeLock() {
+    if (wakeLock) {
+        wakeLock.release();
+        wakeLock = null;
+        console.log("Screen wake lock disabled.");
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    enableWakeLock();
+});

@@ -19,25 +19,30 @@ const CN = { // cookie names (not the full list)
 	INDEX_SB : "indexSB"     , // index of current small blind in an array of all SBs
 	INDEX_BB : "indexBB"     , // index of current big blind in an array of all BBs
 	TIME_LEFT: "timer"       , // time left (seconds) in the current blinds round before blinds raise
+	LANGUAGE : "language"      // see i18n.js, applyI18n
 };
 // cookie-bound variables
 var playing = false;
 var paused = false;
 var timeLeft = 0;
 var sound = true;
-var blindsSmall, blindsBig, blindIndexSmall, blindIndexBig;
+var blindsSmall = [], blindsBig = [], blindIndexSmall = 0, blindIndexBig = 0;
 
 var inputsAll;
+var btnTexts;
 
 function $(id) { return document.getElementById(id); }
 function num(index) { return +inputsAll[index].value; }
 function set(id, text) { $(id).textContent = text; }
 function getBlinds(id) { return $(id).value.split(" ").map(x => +x).filter(x => x); }
-function updateBlindsText(idxSB, idxBB) { set("blinds", "Блайнды: " + blindsSmall[idxSB] + " / " + blindsBig[idxBB]); }
+function updateTextBlinds(idxSB, idxBB) { set("blinds", btnTexts.txtBlinds + blindsSmall[idxSB] + " / " + blindsBig[idxBB]); }
+function updateTextPaused() { set("pause", paused ? btnTexts.btnPlay : btnTexts.btnPause); }
+function updateTextSound () { set("soundToggle", sound ? btnTexts.sndRemove : btnTexts.sndRetain); }
 function hasCookie(name) { return Cookies.get(name) !== undefined; }
+function setPaused(p) { Cookies.set(CN.PAUSED, paused = p); updateTextPaused(); }
+function enableSound(doEnable) { Cookies.set(CN.ALERTS, sound = doEnable); updateTextSound(); }
 function tcn(name, turnOn) { if (turnOn) document.body.classList.add(name); else document.body.classList.remove(name); } // toggle class name
-function setPaused(p) { Cookies.set(CN.PAUSED, paused = p); set("pause", p ? "Пуск" : "Пауза"); }
-function enableSound(doEnable) { Cookies.set(CN.ALERTS, sound = doEnable); set("soundToggle", doEnable ? "Убрать звук" : "Включить звук"); }
+function switchLanguage() { applyI18n(language == "RU" ? "EN" : "RU"); }
 function applyToAllInputs(f) {
 	for (var input in inputsAll)
 		f(inputsAll[input]);
@@ -73,7 +78,7 @@ function resetTimer(time) {
 	tcn(BCN.LAST_BLINDS,
 		blindIndexSmall == blindsSmall.length - 1 &&
 		blindIndexBig   == blindsBig  .length - 1);
-	updateBlindsText(blindIndexSmall, blindIndexBig);
+	updateTextBlinds(blindIndexSmall, blindIndexBig);
 }
 
 function updateTimerText() {
@@ -130,6 +135,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	$("stop" ).addEventListener("click", () => setPlaying(false) );
 	$("stop2").addEventListener("click", () => setPlaying(false) );
 	$("pause").addEventListener("click", () => setPaused(!paused));
+	$("langImage").addEventListener("click", switchLanguage);
 	$("soundToggle").addEventListener("click", () => enableSound(!sound));
 	bindCookieToInput("chip1"    , "chipValueWhite" );
 	bindCookieToInput("chip2"    , "chipValueGreen" );
@@ -142,6 +148,9 @@ document.addEventListener("DOMContentLoaded", function() {
 	bindCookieToInput("ppl"      , "numPlayers"     );
 	bindCookieToInput("rebuys"   , "numRebuys"      );
 	bindCookieToInput("rebuyPC"  , "rebuyPercentage");
+	if (hasCookie(CN.LANGUAGE))
+		applyI18n(Cookies.get(CN.LANGUAGE));
+	else applyI18n("RU");
 	if (hasCookie(CN.ALERTS))
 		enableSound(Cookies.get(CN.ALERTS) == "true");
 	else enableSound(sound);
@@ -171,7 +180,7 @@ function recalculate() {
 	if (rebuys > 0) stackRebuy = Math.floor((playerDesiredStack - stackStart) / rebuys);
 	
 	set("bank", totalBank);
-	set("stackStart", stackStart);
+	set("stack", stackStart);
 	set("stackRebuy", stackRebuy);
 	tcn(BCN.REBUYS, stackRebuy);
 	
@@ -220,3 +229,19 @@ function disableWakeLock() {
 document.addEventListener("DOMContentLoaded", () => {
     enableWakeLock();
 });
+
+// language setting
+function applyI18n(lang) {
+	Cookies.set(CN.LANGUAGE, language = lang);
+	btnTexts = Object.assign({}, LANG[lang]); // copy from i18n.js
+	const ids = btnTexts.ID;
+	for (const id in ids) {
+		if (!ids.hasOwnProperty(id)) continue;
+		$(id).textContent = ids[id];
+	}
+	updateTextBlinds(blindIndexSmall, blindIndexBig);
+	updateTextPaused();
+	updateTextSound ();
+	$("langImage").src = btnTexts.imgsrc;
+	delete btnTexts.ID; // retain only texts that change via JS
+}

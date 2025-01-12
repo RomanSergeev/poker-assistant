@@ -6,13 +6,13 @@ Simple page to assist poker games. Place chip nominals, set blinds amount separa
 <h2>Features:</h2>
 <ul>
   <li>No screen fading</li>
-  <li>All values are stored in cookies. Time is updated every 5 seconds</li>
+  <li>All values are stored in cookies. Time is saved every 5 seconds</li>
   <li>Sound signal 1 minute before, and shortly before blinds change. Can be turned off</li>
   <li>Chip giveaway formula based on fixed amount of chips in storage (50, 50, 100, 50, 50)</li>
   <li>Adaptive layout (to the current degree of my knowledge)</li>
+  <li>Easy RU/EN switch on the top right</li>
 </ul>
 <h2>Backlog:</h2>
 <ul>
-  <li>Add easy RU/EN switch</li>
   <li>Add smarter chip count system (for every player)</li>
 </ul>

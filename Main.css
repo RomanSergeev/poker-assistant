@@ -33,16 +33,17 @@ body {
 	color: white;
 	background-color: black;
 	background-image: url("./Images/bg.jpg");
-	background-position-x: -30px;
+	background-size: 200%;
+	background-position-x: 0px;
 }
 
 /********** fixed language selector image **********/
 
 img#langImage {
-	transform: scale(3);
+	transform: scale(2);
     position: fixed;
-    top: 24px;
-    right: 30px;
+    top: 12px;
+    right: 15px;
 	cursor: pointer;
 }
 

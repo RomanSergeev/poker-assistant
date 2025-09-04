@@ -39,12 +39,18 @@ body {
 
 /********** fixed language selector image **********/
 
-img#langImage {
+img#langImage,
+img#langImage2 {
 	transform: scale(2);
     position: fixed;
     top: 12px;
     right: 15px;
 	cursor: pointer;
+}
+
+img#langImage2 {
+	right: 0;
+	left: 15px;
 }
 
 img#langImage:hover,
@@ -100,7 +106,7 @@ body:not(.evenChips) span#plus {
 
 /********** Main elements layout **********/
 
-body>div {
+body>div>div {
 	position: relative;
 	margin-top: 1rem;
 	width: 100%; /* Take full width of the page */

@@ -6,66 +6,71 @@
 <title id="title"></title>
 <script src="js.cookie.js"></script>
 <script src="i18n.js"></script>
+<script src="Code generator.js" charset="UTF-8"></script>
 <script src="Main.js" charset="UTF-8"></script>
 <link rel="icon" href="Images/Chip red.png"/>
 <link rel="stylesheet" type="text/css" href="Main.css"/>
 </head>
 <body>
-
-<div id="imgHolder">
-	<div><img/><input id="chip1" type="number" min="0" step="1" value="1"   class="shade"/></div>
-	<div><img/><input id="chip2" type="number" min="0" step="1" value="5"   class="shade"/></div>
-	<div><img/><input id="chip3" type="number" min="0" step="1" value="10"  class="shade"/></div>
-	<div><img/><input id="chip4" type="number" min="0" step="1" value="25"  class="shade"/></div>
-	<div><img/><input id="chip5" type="number" min="0" step="1" value="100" class="white"/></div>
-</div>
-<div id="timerHolder">
-	<div id="timerSetup">
-		<span id="roundDur"></span>
-		<input type="number" id="timerMins" min="10" max="90" value="30" />
-		<button id="start"></button>
-		<table id="blindInputs"><tbody>
-			<tr><td><label id="labelSB" for="inputSB"></label></td><td><input id="inputSB" type="text" value="1 2 3 4 5 7 10 15 20 25"/></td></tr>
-			<tr><td><label id="labelBB" for="inputBB"></label></td><td><input id="inputBB" type="text" value="2 3 5 7 10 15 20 30 40 50"/></td></tr>
-		</tbody></table>
+<div id="scene1">
+	<div id="imgHolder">
+		<div><img/><input id="chip1" type="number" min="0" step="1" value="1"   class="shade"/></div>
+		<div><img/><input id="chip2" type="number" min="0" step="1" value="5"   class="shade"/></div>
+		<div><img/><input id="chip3" type="number" min="0" step="1" value="10"  class="shade"/></div>
+		<div><img/><input id="chip4" type="number" min="0" step="1" value="25"  class="shade"/></div>
+		<div><img/><input id="chip5" type="number" min="0" step="1" value="100" class="white"/></div>
 	</div>
-	<div id="timerMain">
-		<div id="timerSub">
-			<div id="timer"></div>
-			<button id="pause"></button>
-			<button id="stop"></button>
+	<div id="timerHolder">
+		<div id="timerSetup">
+			<span id="roundDur"></span>
+			<input type="number" id="timerMins" min="10" max="90" value="30" />
+			<button id="start"></button>
+			<table id="blindInputs"><tbody>
+				<tr><td><label id="labelSB" for="inputSB"></label></td><td><input id="inputSB" type="text" value="1 2 3 4 5 7 10 15 20 25"/></td></tr>
+				<tr><td><label id="labelBB" for="inputBB"></label></td><td><input id="inputBB" type="text" value="2 3 5 7 10 15 20 30 40 50"/></td></tr>
+			</tbody></table>
 		</div>
-		<span id="blinds" class="white"></span>
-	</div>
-</div>
-<div id="calcHolder1">
-	<div><span id="stackText"></span><span id="stack"></span></div>
-	<div id="rebuy"><span id="rebuyText"></span><span id="stackRebuy"></span></div>
-	<div>
-		<span id="startChips"></span>
-		<div id="startChipsHolder">
-			<div><span id="startChips1" class="shade1"></span></div>
-			<div><span id="startChips2" class="shade1"></span></div>
-			<div><span id="startChips3" class="shade1"></span></div>
-			<div><span id="startChips4" class="shade1"></span></div>
-			<div><span id="startChips5" class="white1"></span></div>
+		<div id="timerMain">
+			<div id="timerSub">
+				<div id="timer"></div>
+				<button id="pause"></button>
+				<button id="stop"></button>
+			</div>
+			<span id="blinds" class="white"></span>
 		</div>
-		<span id="plus"></span>
 	</div>
+	<div id="calcHolder1">
+		<div><span id="stackText"></span><span id="stack"></span></div>
+		<div id="rebuy"><span id="rebuyText"></span><span id="stackRebuy"></span></div>
+		<div>
+			<span id="startChips"></span>
+			<div id="startChipsHolder">
+				<div><span id="startChips1" class="shade1"></span></div>
+				<div><span id="startChips2" class="shade1"></span></div>
+				<div><span id="startChips3" class="shade1"></span></div>
+				<div><span id="startChips4" class="shade1"></span></div>
+				<div><span id="startChips5" class="white1"></span></div>
+			</div>
+			<span id="plus"></span>
+		</div>
+	</div>
+	<div id="calcHolder2">
+		<div><label id="playersText" for="ppl"></label><input type="number" id="ppl" min="3" max="8" value="7" /></div>
+		<div><span id="bankText"></span><span id="bank"></span></div>
+		<div><label id="rebuysText" for="rebuys"></label><input type="number" id="rebuys" min="0" max="3" value="0"></div>
+		<div><label id="rebuyPCText" for="rebuyPC"></label><input type="number" id="rebuyPC" min="0" max="50" value="40"></div>
+		<div id="soundToggle" class="white1"></div>
+	</div>
+	<div id="resetHolder">
+		<button id="stop2">Стоп</button>
+	</div>
+	<img id="langImage" />
+	<audio id="beepShort" src="./Images/Beep-warn.m4a"></audio>
+	<audio id="beepLong" src="./Images/Beep-end.m4a"></audio>
 </div>
-<div id="calcHolder2">
-	<div><label id="playersText" for="ppl"></label><input type="number" id="ppl" min="3" max="8" value="7" /></div>
-	<div><span id="bankText"></span><span id="bank"></span></div>
-	<div><label id="rebuysText" for="rebuys"></label><input type="number" id="rebuys" min="0" max="3" value="0"></div>
-	<div><label id="rebuyPCText" for="rebuyPC"></label><input type="number" id="rebuyPC" min="0" max="50" value="40"></div>
-	<div id="soundToggle" class="white1"></div>
+<div id="scene2" style="display: none; position: absolute; top: 0; width: 1920px; height: 1080px;" onclick="generateCode()">
+	<div id="code" style="font-size: 60px; color: white;"></div>
 </div>
-<div id="resetHolder">
-	<button id="stop2">Стоп</button>
-</div>
-<img id="langImage" />
-<audio id="beepShort" src="./Images/Beep-warn.m4a"></audio>
-<audio id="beepLong" src="./Images/Beep-end.m4a"></audio>
-
+<img id="langImage2" src="Images/EN.png" onclick="switchScenes()" />
 </body>
 </html>

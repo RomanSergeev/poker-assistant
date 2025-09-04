@@ -31,7 +31,6 @@ var blindsSmall = [], blindsBig = [], blindIndexSmall = 0, blindIndexBig = 0;
 var inputsAll;
 var btnTexts;
 
-function $(id) { return document.getElementById(id); }
 function num(index) { return +inputsAll[index].value; }
 function set(id, text) { $(id).textContent = text; }
 function getBlinds(id) { return $(id).value.split(" ").map(x => +x).filter(x => x); }
@@ -228,6 +227,7 @@ function disableWakeLock() {
 
 document.addEventListener("DOMContentLoaded", () => {
     enableWakeLock();
+	generateCode();
 });
 
 // language setting

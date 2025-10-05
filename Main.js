@@ -227,7 +227,7 @@ function disableWakeLock() {
 
 document.addEventListener("DOMContentLoaded", () => {
     enableWakeLock();
-	generateCode();
+	generateCodeCall();
 });
 
 // language setting
